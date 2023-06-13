@@ -1,15 +1,7 @@
 <template>
-  <q-page class="flex flex-center">
-    <img
-      alt="Quasar logo"
-      src="~assets/quasar-logo-vertical.svg"
-      style="width: 200px; height: 200px"
-    >
-
-  </q-page>
   <div>
-    <q-link to="/new" @click="redirectToNewPage">Ir para outra rota</q-link>
-    </div>
+    <h1 style="font-size: 50px; text-align: center;">Seja bem vindo a TI SAÚDE</h1>
+  </div>
 </template>
 
 <script>
