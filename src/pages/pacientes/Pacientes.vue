@@ -1,8 +1,9 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <TabelaLink :dados="data" titulo="Pacientes" :coluna="coluna"/>
-    <div>
-      <q-btn label="Voltar" color="primary" @click="redirectToNewPage" />
+    <div style="display: flex; justify-content:flex-end;" class="q-pa-md">
+      <q-btn style="margin: 0 5px;" label="Voltar" color="primary" @click="redirectToNewPage" />
+      <q-btn label="Novo paciente" color="primary" @click="redirectToCreate" />
     </div>
   </div>
 
@@ -47,15 +48,18 @@ export default defineComponent({
       console.log("Clicou no link");
       this.$router.push("/");
     },
+    redirectToCreate(){
+      this.$router.push("/pacientes/create");
+    },
     fetchData() {
       let token = {
         headers: {
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMy41OS4xODEuNjM6ODA4MFwvYXBpXC9sb2dpbiIsImlhdCI6MTY4NjYzMDQ1MiwiZXhwIjoxNjg2NjM0MDUyLCJuYmYiOjE2ODY2MzA0NTIsImp0aSI6IkpGQ3I4TUdvNnJwZ1B5MTkiLCJzdWIiOjEsInBydiI6IjRhNTY4ZTRkMzY0YTIyZGVjYWFhMmUyM2EzZjc0M2Y3OGFhZjE1OWUifQ.xZevTbZpHtrUFcLshsUp13nbKNkCm4Jwn2yq7nYusSc`,
+          Authorization: `Bearer ${window.localStorage.getItem('token_ti')}`,
         },
       };
       axios
         .post(
-          "http://13.59.181.63:8080/api/pacientes/listar",
+          "http://192.168.0.104:8080/api/pacientes/listar",
           {
             registro_por_pagina: 10,
           },

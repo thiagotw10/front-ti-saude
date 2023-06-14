@@ -1,9 +1,9 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
-    <TabelaLink :dados="data" titulo="Médicos" :coluna="coluna" />
+    <TabelaLink :dados="data" titulo="Especialidades" :coluna="coluna" />
     <div style="display: flex; justify-content:flex-end;" class="q-pa-md">
       <q-btn style="margin: 0 5px;" label="Voltar" color="primary" @click="redirectToNewPage" />
-      <q-btn label="Novo médico" color="primary" @click="redirectToCreate" />
+      <q-btn label="Nova especialidade" color="primary" @click="redirectToCreate" />
     </div>
   </div>
 
@@ -25,14 +25,12 @@ const columns = [
     format: val => `${val}`,
     sortable: true
   },
-  { name: 'crm', align: 'center', label: 'CRM', field: 'crm', sortable: true },
-  { name: 'especialidade', label: 'Especialidade', field: 'especialidade', sortable: true },
 ]
 
 
 
 export default defineComponent({
-  name: "MediCos",
+  name: "especialidadeS",
   components: {
     TabelaLink
   },
@@ -54,7 +52,7 @@ export default defineComponent({
       this.$router.push("/");
     },
     redirectToCreate(){
-      this.$router.push("/medicos/create");
+      this.$router.push("/especialidades/create");
     },
     fetchData() {
       let token = {
@@ -64,7 +62,7 @@ export default defineComponent({
       };
       axios
         .post(
-          "http://192.168.0.104:8080/api/medicos/listar",
+          "http://192.168.0.104:8080/api/especialidades/listar",
           {
             registro_por_pagina: 10,
           },
@@ -75,9 +73,7 @@ export default defineComponent({
 
           const newData = response.data.data.map((value) => {
             return {
-              name: value.med_nome,
-              crm: value.med_CRM,
-              especialidade: value.especialidade.espec_nome
+              name: value.espec_nome,
             };
           });
 
