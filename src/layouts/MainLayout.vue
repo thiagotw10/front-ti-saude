@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-header elevated>
+    <q-header elevated style="background-color: #9b3490 !important">
       <q-toolbar>
         <q-btn
           flat
@@ -11,25 +11,15 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title>
-          Ti saúde
-        </q-toolbar-title>
+        <q-toolbar-title> Ti saúde </q-toolbar-title>
 
-        <div></div>
+        <div><q-btn label="sair" color="primary" @click="sair" /></div>
       </q-toolbar>
     </q-header>
 
-    <q-drawer
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label
-          header
-        >
-
-        </q-item-label>
+        <q-item-label header> </q-item-label>
 
         <EssentialLink
           v-for="link in essentialLinks"
@@ -47,60 +37,76 @@
 </template>
 
 <script>
-import { defineComponent, ref } from 'vue'
-import EssentialLink from 'components/EssentialLink.vue'
+import { defineComponent, ref } from "vue";
+import EssentialLink from "components/EssentialLink.vue";
 
 const linksList = [
   {
-    title: 'Medicos',
-    caption: 'Sessão médicos',
-    icon: 'school',
-    link: '/medicos'
+    title: "Medicos",
+    caption: "Sessão médicos",
+    icon: "school",
+    link: "/medicos",
   },
   {
-    title: 'Pacientes',
-    caption: 'Sessão pacientes',
-    icon: 'settings_accessibility',
-    link: '/pacientes'
+    title: "Pacientes",
+    caption: "Sessão pacientes",
+    icon: "settings_accessibility",
+    link: "/pacientes",
   },
   {
-    title: 'Planos de saúde',
-    caption: 'Sessão planos',
-    icon: 'elderly_woman',
-    link: '/planosSaude'
+    title: "Planos de saúde",
+    caption: "Sessão planos",
+    icon: "elderly_woman",
+    link: "/planosSaude",
   },
   {
-    title: 'Especialidades',
-    caption: 'Sessão especialidades',
-    icon: 'star_rate',
-    link: '/especialidades'
+    title: "Especialidades",
+    caption: "Sessão especialidades",
+    icon: "star_rate",
+    link: "/especialidades",
   },
-]
+  {
+    title: "Consultas",
+    caption: "Sessão consultas",
+    icon: "monitor_heart",
+    link: "/consultas",
+  },
+  {
+    title: "Procedimentos",
+    caption: "Sessão procedimentos",
+    icon: "medication",
+    link: "/procedimentos",
+  },
+];
 
 export default defineComponent({
-  name: 'MainLayout',
+  name: "MainLayout",
 
   components: {
-    EssentialLink
+    EssentialLink,
   },
 
   methods: {
-    teste(link){
-      console.log(link.link)
+    teste(link) {
+      console.log(link.link);
       this.$router.push(link.link);
-    }
+    },
+    sair() {
+      localStorage.clear("token");
+      this.$router.push("/");
+    },
   },
 
-  setup () {
-    const leftDrawerOpen = ref(false)
+  setup() {
+    const leftDrawerOpen = ref(false);
 
     return {
       essentialLinks: linksList,
       leftDrawerOpen,
-      toggleLeftDrawer () {
-        leftDrawerOpen.value = !leftDrawerOpen.value
-      }
-    }
-  }
-})
+      toggleLeftDrawer() {
+        leftDrawerOpen.value = !leftDrawerOpen.value;
+      },
+    };
+  },
+});
 </script>

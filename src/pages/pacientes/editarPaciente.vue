@@ -2,17 +2,23 @@
   <div class="q-pa-md">
     <div class="q-gutter-md row items-start">
       <q-input v-model="nome" filled type="text" hint="Nome" />
-      <q-input v-model="crm" filled type="text" hint="CRM" />
+      <q-input v-model="telefone" filled mask="(##)####-####" hint="Telefone" />
+      <q-input
+        v-model="dataNascimento"
+        filled
+        mask="##/##/####"
+        hint="Data de nascimento"
+      />
       <q-select
         filled
-        v-model="especialidade"
+        v-model="plano"
         :options="data"
         option-value="id"
         option-label="desc"
         option-disable="inactive"
         emit-value
         map-options
-        hint="Especialidades"
+        hint="Planos de saúde"
         style="min-width: 250px; max-width: 300px"
         :loading="isLoading"
       />
@@ -38,13 +44,13 @@
   <q-dialog v-model="icon">
     <q-card>
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ retornoTitulo }}</div>
+        <div class="text-h6">Dados faltando.</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
 
       <q-card-section>
-        {{ retorno }}
+        Todo os campos precisam ser preenchidos.
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -57,34 +63,38 @@ import axios from "axios";
 import { url } from "src/urlApi";
 
 export default defineComponent({
-  name: "createMedicos",
+  name: "editarPaciente",
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       data: null,
       isLoading: false,
       isLoadingEnviar: false,
-      retorno: "Todo os campos precisam ser preenchidos.",
-      retornoTitulo: "Dados faltando.",
-      botaoLabel: "Criar",
+      botaoLabel: "Editar",
     };
   },
   mounted() {
-    this.carregarEspecialidades();
+    this.carregarPaciente();
   },
   methods: {
     voltar() {
-      this.$router.push("/medicos");
+      this.$router.push("/pacientes");
     },
-    carregarEspecialidades() {
+    async carregarPaciente() {
       this.isLoading = true;
       let token = {
         headers: {
           Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
         },
       };
-      axios
+      await axios
         .post(
-          `${url}api/especialidades/listar`,
+          `${url}api/planosaude/listar`,
           {
             registro_por_pagina: 10,
           },
@@ -95,56 +105,62 @@ export default defineComponent({
 
           const newData = response.data.data.map((value) => {
             return {
-              id: value.espec_codigo,
-              desc: value.espec_nome,
+              id: value.plano_codigo,
+              desc: value.plano_descricao,
             };
           });
 
           this.data = newData;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      await axios
+        .get(`${url}api/pacientes/${this.id}`, token)
+        .then((response) => {
+          this.nome = response.data.pac_nome;
+          this.telefone = response.data.pac_telefone;
+          this.dataNascimento = response.data.pac_dataNascimento;
+          this.plano = response.data.plano_codigo;
           this.isLoading = false;
         })
         .catch((error) => {
-          if (error.response.status) {
-          }
           console.error(error);
         });
     },
     criarMedico() {
       this.isLoadingEnviar = true;
       this.botaoLabel = "Carregando ...";
-      if (this.especialidade != "" && this.nome != "" && this.crm != "") {
+      if (this.telefone != "" && this.nome != "" && this.dataNascimento != "") {
         let token = {
           headers: {
             Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
           },
         };
         axios
-          .post(
-            `${url}api/medicos`,
+          .put(
+            `${url}api/pacientes/${this.id}`,
             {
-              med_nome: this.nome,
-              med_CRM: this.crm,
-              med_espec: this.especialidade,
+              pac_nome: this.nome,
+              pac_telefone: this.telefone,
+              pac_dataNascimento: this.dataNascimento,
+              ...(this.plano ? { plano_saude: this.plano } : null),
             },
             token
           )
           .then((response) => {
             this.isLoadingEnviar = false;
-            this.$router.push("/medicos");
+            this.$router.push("/pacientes");
           })
           .catch((error) => {
-            if (error.response.status == 422) {
-              this.retornoTitulo = "Erro";
-              this.retorno = "Esse CRM já existe.";
-              this.icon = true;
-            }
             this.isLoadingEnviar = false;
             this.botaoLabel = "Criar";
             console.error(error);
           });
       } else {
-        this.botaoLabel = "Criar";
         this.isLoadingEnviar = false;
+        this.botaoLabel = "Criar";
         this.icon = true;
       }
     },
@@ -152,9 +168,10 @@ export default defineComponent({
   setup() {
     return {
       nome: ref(""),
-      crm: ref(""),
+      telefone: ref(""),
+      dataNascimento: ref(""),
       icon: ref(false),
-      especialidade: ref(null),
+      plano: ref(null),
     };
   },
 });

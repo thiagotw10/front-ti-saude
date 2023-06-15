@@ -1,9 +1,14 @@
 <template>
   <div class="q-pa-md">
     <div class="q-gutter-md row items-start">
-      <q-input  v-model="nome" filled type="text" hint="Nome" />
-      <q-input v-model="telefone" filled mask="(##)#####-####" hint="Telefone" />
-      <q-input v-model="dataNascimento" filled mask="##/##/####" hint="Data de nascimento" />
+      <q-input v-model="nome" filled type="text" hint="Nome" />
+      <q-input v-model="telefone" filled mask="(##)####-####" hint="Telefone" />
+      <q-input
+        v-model="dataNascimento"
+        filled
+        mask="##/##/####"
+        hint="Data de nascimento"
+      />
       <q-select
         filled
         v-model="plano"
@@ -19,59 +24,73 @@
       />
     </div>
     <div class="q-pa-md q-gutter-sm">
-      <div style="display: flex; justify-content:flex-end;" class="q-pa-md">
-        <q-btn style="margin: 0 5px;" label="Voltar" color="primary" @click="voltar" :disabled="isLoadingEnviar"/>
-        <q-btn :label="botaoLabel"  color="primary" @click="criarMedico" :disabled="isLoadingEnviar"/>
+      <div style="display: flex; justify-content: flex-end" class="q-pa-md">
+        <q-btn
+          style="margin: 0 5px"
+          label="Voltar"
+          color="primary"
+          @click="voltar"
+          :disabled="isLoadingEnviar"
+        />
+        <q-btn
+          :label="botaoLabel"
+          color="primary"
+          @click="criarMedico"
+          :disabled="isLoadingEnviar"
+        />
       </div>
     </div>
   </div>
   <q-dialog v-model="icon">
-      <q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Dados faltando.</div>
-          <q-space />
-          <q-btn  icon="close" flat round dense v-close-popup />
-        </q-card-section>
+    <q-card>
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">{{ retornoTitulo }}</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
 
-        <q-card-section>
-          Todo os campos precisam ser preenchidos.
-        </q-card-section>
-      </q-card>
+      <q-card-section>
+        {{ retorno }}
+      </q-card-section>
+    </q-card>
   </q-dialog>
 </template>
 
 <script>
 import { defineComponent } from "vue";
-import { ref } from 'vue'
+import { ref } from "vue";
 import axios from "axios";
+import { url } from "src/urlApi";
 
 export default defineComponent({
-  name: 'createPaciente',
-  data(){
+  name: "createPaciente",
+  data() {
     return {
       data: null,
       isLoading: false,
       isLoadingEnviar: false,
-      botaoLabel: 'Criar'
-    }
+      retorno: "Todo os campos precisam ser preenchidos.",
+      retornoTitulo: "Dados faltando.",
+      botaoLabel: "Criar",
+    };
   },
-  mounted(){
-    this.carregarEspecialidades()
+  mounted() {
+    this.carregarEspecialidades();
   },
   methods: {
-    voltar(){
-      this.$router.push("/planosSaude");
+    voltar() {
+      this.$router.push("/pacientes");
     },
-    carregarEspecialidades(){
-      this.isLoading = true
+    carregarEspecialidades() {
+      this.isLoading = true;
       let token = {
         headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('token_ti')}`,
+          Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
         },
       };
       axios
         .post(
-          "http://192.168.0.104:8080/api/planosaude/listar",
+          `${url}api/planosaude/listar`,
           {
             registro_por_pagina: 10,
           },
@@ -87,55 +106,64 @@ export default defineComponent({
             };
           });
 
-          this.data = newData
-          this.isLoading = false
+          this.data = newData;
+          this.isLoading = false;
         })
         .catch((error) => {
+          if (error.response.status) {
+          }
           console.error(error);
         });
     },
-    criarMedico(){
-      this.isLoadingEnviar = true
-      this.botaoLabel = 'Carregando ...'
-      if(this.telefone != '' && this.nome != '' && this.plano != '' && this.dataNascimento != ''){
+    criarMedico() {
+      this.isLoadingEnviar = true;
+      this.botaoLabel = "Carregando ...";
+      if (this.telefone != "" && this.nome != "" && this.dataNascimento != "") {
         let token = {
-        headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('token_ti')}`,
-        },
-      };
-      axios
-        .post(
-          "http://192.168.0.104:8080/api/planosaude",
-          {
-            plano_descricao: this.nome,
-            plano_telefone: this.telefone,
+          headers: {
+            Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
           },
-          token
-        )
-        .then((response) => {
-          this.isLoadingEnviar = false
-          this.$router.push("/planosSaude");
-        })
-        .catch((error) => {
-          this.isLoadingEnviar = false
-          this.botaoLabel = 'Criar'
-          console.error(error);
-        });
-      }else{
-        this.isLoadingEnviar = false
-        this.botaoLabel = 'Criar'
-        this.icon = true
+        };
+        axios
+          .post(
+            `${url}api/pacientes`,
+            {
+              pac_nome: this.nome,
+              pac_telefone: this.telefone,
+              pac_dataNascimento: this.dataNascimento,
+              ...(this.plano ? { plano_saude: this.plano } : null),
+            },
+            token
+          )
+          .then((response) => {
+            this.isLoadingEnviar = false;
+            this.$router.push("/pacientes");
+          })
+          .catch((error) => {
+            if (error.response.status == 422) {
+              this.retornoTitulo = "Erro";
+              this.retorno = "Esse telefone já existe.";
+              this.icon = true;
+            }
+            this.isLoadingEnviar = false;
+            this.botaoLabel = "Criar";
+            console.error(error);
+          });
+      } else {
+        this.isLoadingEnviar = false;
+        this.botaoLabel = "Criar";
+        this.icon = true;
       }
-    }
+    },
   },
-  setup () {
+  setup() {
     return {
-      nome: ref(''),
-      telefone: ref(''),
-      dataNascimento: ref(''),
+      nome: ref(""),
+      telefone: ref(""),
+      dataNascimento: ref(""),
       icon: ref(false),
       plano: ref(null),
-    }
-  }
-})
+    };
+  },
+});
 </script>

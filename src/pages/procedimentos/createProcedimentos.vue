@@ -2,7 +2,7 @@
   <div class="q-pa-md">
     <div class="q-gutter-md row items-start">
       <q-input v-model="nome" filled type="text" hint="Nome" />
-      <q-input v-model="telefone" filled mask="(##)####-####" hint="Telefone" />
+      <q-input v-model="valor" filled hint="Valor" />
     </div>
     <div class="q-pa-md q-gutter-sm">
       <div style="display: flex; justify-content: flex-end" class="q-pa-md">
@@ -44,7 +44,7 @@ import axios from "axios";
 import { url } from "src/urlApi";
 
 export default defineComponent({
-  name: "createPlanos",
+  name: "createProcedimentos",
   data() {
     return {
       data: null,
@@ -58,12 +58,12 @@ export default defineComponent({
   mounted() {},
   methods: {
     voltar() {
-      this.$router.push("/planosSaude");
+      this.$router.push("/procedimentos");
     },
     criarMedico() {
       this.isLoadingEnviar = true;
       this.botaoLabel = "Carregando ...";
-      if (this.telefone != "" && this.nome != "") {
+      if (this.valor != "" && this.nome != "") {
         let token = {
           headers: {
             Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
@@ -71,21 +71,21 @@ export default defineComponent({
         };
         axios
           .post(
-            `${url}api/planosaude`,
+            `${url}api/procedimentos`,
             {
-              plano_descricao: this.nome,
-              plano_telefone: this.telefone,
+              proc_nome: this.nome,
+              proc_valor: this.valor,
             },
             token
           )
           .then((response) => {
             this.isLoadingEnviar = false;
-            this.$router.push("/planosSaude");
+            this.$router.push("/procedimentos");
           })
           .catch((error) => {
             if (error.response.status == 422) {
               this.retornoTitulo = "Erro";
-              this.retorno = "Telefone ou nome já existem.";
+              this.retorno = "Esse nome de procedimento já existe";
               this.icon = true;
             }
             this.isLoadingEnviar = false;

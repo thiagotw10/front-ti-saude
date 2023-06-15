@@ -2,7 +2,7 @@
   <div class="q-pa-md q-gutter-sm" style="position: relative">
     <TabelaLink
       :dados="data"
-      titulo="Planos de saúde"
+      titulo="Consultas"
       :coluna="coluna"
       @enviar-funcao="deletar"
       @enviar-edit="redirectEditar"
@@ -14,7 +14,7 @@
         color="primary"
         @click="redirectToNewPage"
       />
-      <q-btn label="Novo plano" color="primary" @click="redirectToCreate" />
+      <q-btn label="Nova consulta" color="primary" @click="redirectToCreate" />
     </div>
     <div
       v-if="isLoading"
@@ -39,22 +39,63 @@ import { defineComponent } from "vue";
 import ModalLink from "components/ModalLink.vue";
 import TabelaLink from "components/TabelaLink.vue";
 import axios from "axios";
+import { url } from "src/urlApi";
 
 const columns = [
   {
-    name: "name",
-    required: true,
-    label: "Nome",
-    align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
+    name: "procedimento",
+    align: "center",
+    label: "Procedimento",
+    field: "procedimento",
     sortable: true,
   },
   {
-    name: "telefone",
+    name: "data",
     align: "center",
-    label: "Telefone",
-    field: "telefone",
+    label: "Data",
+    field: "data",
+    sortable: true,
+  },
+  {
+    name: "hora",
+    align: "center",
+    label: "Hora",
+    field: "hora",
+    sortable: true,
+  },
+  {
+    name: "particular",
+    align: "center",
+    label: "Particular",
+    field: "particular",
+    sortable: true,
+  },
+  {
+    name: "medico",
+    align: "center",
+    label: "Medico",
+    field: "medico",
+    sortable: true,
+  },
+  {
+    name: "nr_contrato",
+    align: "center",
+    label: "Nr_contrato",
+    field: "nr_contrato",
+    sortable: true,
+  },
+  {
+    name: "plano",
+    align: "center",
+    label: "Plano",
+    field: "plano",
+    sortable: true,
+  },
+  {
+    name: "paciente",
+    align: "center",
+    label: "Paciente",
+    field: "paciente",
     sortable: true,
   },
   {
@@ -67,7 +108,7 @@ const columns = [
 ];
 
 export default defineComponent({
-  name: "PlanoS",
+  name: "consultaS",
   components: {
     TabelaLink,
   },
@@ -88,10 +129,10 @@ export default defineComponent({
       this.$router.push("/");
     },
     redirectToCreate() {
-      this.$router.push("/planosSaude/create");
+      this.$router.push("/consultas/create");
     },
     redirectEditar(id) {
-      this.$router.push({ path: "/planosSaude/editar/" + id });
+      this.$router.push({ path: "/consultas/editar/" + id });
     },
     deletar(id) {
       this.isLoading = true;
@@ -101,7 +142,7 @@ export default defineComponent({
         },
       };
       axios
-        .delete(`http://192.168.0.104:8080/api/planosaude/${id}`, token)
+        .delete(`${url}api/consultas/${id}`, token)
         .then((response) => {
           this.fetchData();
         })
@@ -117,7 +158,7 @@ export default defineComponent({
       };
       axios
         .post(
-          "http://192.168.0.104:8080/api/planosaude/listar",
+          `${url}api/consultas/listar`,
           {
             registro_por_pagina: 10,
           },
@@ -128,9 +169,17 @@ export default defineComponent({
 
           const newData = response.data.data.map((value) => {
             return {
-              name: value.plano_descricao,
-              telefone: value.plano_telefone,
-              id: value.plano_codigo,
+              data: value.data,
+              hora: value.hora,
+              particular: value.particular == "1" ? "sim" : "não",
+              medico: value.medico.med_nome,
+              nr_contrato: value.vinculo ? value.vinculo.nr_contrato : "",
+              plano: value.vinculo
+                ? value.vinculo.plano_saude.plano_descricao
+                : "",
+              paciente: value.paciente.pac_nome,
+              procedimento: value.procedimento[0].proc_nome,
+              id: value.cons_codigo,
             };
           });
 

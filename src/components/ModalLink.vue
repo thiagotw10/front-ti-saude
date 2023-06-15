@@ -17,16 +17,27 @@
         </q-bar>
 
         <q-card-section>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
+          repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis
+          perferendis totam, ea at omnis vel numquam exercitationem aut, natus
+          minima, porro labore.
         </q-card-section>
 
         <q-card-section class="q-pt-none">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
+          repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis
+          perferendis totam, ea at omnis vel numquam exercitationem aut, natus
+          minima, porro labore.
         </q-card-section>
       </q-card>
     </q-dialog>
 
-    <q-dialog v-model="darkDialog" persistent transition-show="flip-down" transition-hide="flip-up">
+    <q-dialog
+      v-model="darkDialog"
+      persistent
+      transition-show="flip-down"
+      transition-hide="flip-up"
+    >
       <q-card class="bg-primary text-white">
         <q-bar>
           <q-icon name="warning" />
@@ -40,7 +51,10 @@
         </q-bar>
 
         <q-card-section>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis perferendis totam, ea at omnis vel numquam exercitationem aut, natus minima, porro labore.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum
+          repellendus sit voluptate voluptas eveniet porro. Rerum blanditiis
+          perferendis totam, ea at omnis vel numquam exercitationem aut, natus
+          minima, porro labore.
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -48,16 +62,16 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue'
-import { ref } from 'vue'
+import { defineComponent } from "vue";
+import { ref } from "vue";
 
 export default defineComponent({
-  name: 'ModalLink',
-  setup () {
+  name: "ModalLink",
+  setup() {
     return {
       lightDialog: ref(false),
-      darkDialog: ref(false)
-    }
-  }
-})
+      darkDialog: ref(false),
+    };
+  },
+});
 </script>

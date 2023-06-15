@@ -2,7 +2,7 @@
   <div class="q-pa-md q-gutter-sm" style="position: relative">
     <TabelaLink
       :dados="data"
-      titulo="Planos de saúde"
+      titulo="Procedimentos"
       :coluna="coluna"
       @enviar-funcao="deletar"
       @enviar-edit="redirectEditar"
@@ -14,7 +14,11 @@
         color="primary"
         @click="redirectToNewPage"
       />
-      <q-btn label="Novo plano" color="primary" @click="redirectToCreate" />
+      <q-btn
+        label="Novo procedimento"
+        color="primary"
+        @click="redirectToCreate"
+      />
     </div>
     <div
       v-if="isLoading"
@@ -39,6 +43,7 @@ import { defineComponent } from "vue";
 import ModalLink from "components/ModalLink.vue";
 import TabelaLink from "components/TabelaLink.vue";
 import axios from "axios";
+import { url } from "src/urlApi";
 
 const columns = [
   {
@@ -51,10 +56,10 @@ const columns = [
     sortable: true,
   },
   {
-    name: "telefone",
+    name: "valor",
     align: "center",
-    label: "Telefone",
-    field: "telefone",
+    label: "Valor",
+    field: "valor",
     sortable: true,
   },
   {
@@ -67,7 +72,7 @@ const columns = [
 ];
 
 export default defineComponent({
-  name: "PlanoS",
+  name: "procedimentoS",
   components: {
     TabelaLink,
   },
@@ -88,10 +93,10 @@ export default defineComponent({
       this.$router.push("/");
     },
     redirectToCreate() {
-      this.$router.push("/planosSaude/create");
+      this.$router.push("/procedimentos/create");
     },
     redirectEditar(id) {
-      this.$router.push({ path: "/planosSaude/editar/" + id });
+      this.$router.push({ path: "/procedimentos/editar/" + id });
     },
     deletar(id) {
       this.isLoading = true;
@@ -101,7 +106,7 @@ export default defineComponent({
         },
       };
       axios
-        .delete(`http://192.168.0.104:8080/api/planosaude/${id}`, token)
+        .delete(`${url}api/procedimentos/${id}`, token)
         .then((response) => {
           this.fetchData();
         })
@@ -117,20 +122,18 @@ export default defineComponent({
       };
       axios
         .post(
-          "http://192.168.0.104:8080/api/planosaude/listar",
+          `${url}api/procedimentos/listar`,
           {
             registro_por_pagina: 10,
           },
           token
         )
         .then((response) => {
-          // Atualize o estado de `data` com os dados da resposta
-
           const newData = response.data.data.map((value) => {
             return {
-              name: value.plano_descricao,
-              telefone: value.plano_telefone,
-              id: value.plano_codigo,
+              name: value.proc_nome,
+              valor: value.proc_valor + " R$",
+              id: value.proc_codigo,
             };
           });
 

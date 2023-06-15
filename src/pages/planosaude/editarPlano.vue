@@ -25,13 +25,13 @@
   <q-dialog v-model="icon">
     <q-card>
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ retornoTitulo }}</div>
+        <div class="text-h6">Dados faltando.</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
 
       <q-card-section>
-        {{ retorno }}
+        Todo os campos precisam ser preenchidos.
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -44,21 +44,45 @@ import axios from "axios";
 import { url } from "src/urlApi";
 
 export default defineComponent({
-  name: "createPlanos",
+  name: "editarPlanos",
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       data: null,
       isLoading: false,
       isLoadingEnviar: false,
-      retorno: "Todo os campos precisam ser preenchidos.",
-      retornoTitulo: "Dados faltando.",
-      botaoLabel: "Criar",
+      botaoLabel: "Editar",
     };
   },
-  mounted() {},
+  mounted() {
+    this.carregarPlano();
+  },
   methods: {
     voltar() {
       this.$router.push("/planosSaude");
+    },
+    async carregarPlano() {
+      this.isLoading = true;
+      let token = {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
+        },
+      };
+
+      await axios
+        .get(`${url}api/planosaude/${this.id}`, token)
+        .then((response) => {
+          this.nome = response.data.plano_descricao;
+          this.telefone = response.data.plano_telefone;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
     },
     criarMedico() {
       this.isLoadingEnviar = true;
@@ -70,8 +94,8 @@ export default defineComponent({
           },
         };
         axios
-          .post(
-            `${url}api/planosaude`,
+          .put(
+            `${url}api/planosaude/${this.id}`,
             {
               plano_descricao: this.nome,
               plano_telefone: this.telefone,
@@ -83,10 +107,9 @@ export default defineComponent({
             this.$router.push("/planosSaude");
           })
           .catch((error) => {
-            if (error.response.status == 422) {
-              this.retornoTitulo = "Erro";
-              this.retorno = "Telefone ou nome já existem.";
-              this.icon = true;
+            if (error.response.status) {
+              localStorage.clear("token_ti");
+              this.$router.push("/");
             }
             this.isLoadingEnviar = false;
             this.botaoLabel = "Criar";

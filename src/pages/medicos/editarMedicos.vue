@@ -38,13 +38,13 @@
   <q-dialog v-model="icon">
     <q-card>
       <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">{{ retornoTitulo }}</div>
+        <div class="text-h6">Dados faltando.</div>
         <q-space />
         <q-btn icon="close" flat round dense v-close-popup />
       </q-card-section>
 
       <q-card-section>
-        {{ retorno }}
+        Todo os campos precisam ser preenchidos.
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -57,32 +57,38 @@ import axios from "axios";
 import { url } from "src/urlApi";
 
 export default defineComponent({
-  name: "createMedicos",
+  name: "editarMedicos",
+  props: {
+    id: {
+      type: String,
+      default: null,
+    },
+  },
   data() {
     return {
       data: null,
       isLoading: false,
       isLoadingEnviar: false,
-      retorno: "Todo os campos precisam ser preenchidos.",
-      retornoTitulo: "Dados faltando.",
-      botaoLabel: "Criar",
+      botaoLabel: "Editar",
     };
   },
   mounted() {
-    this.carregarEspecialidades();
+    this.carregarMedico();
   },
   methods: {
     voltar() {
       this.$router.push("/medicos");
     },
-    carregarEspecialidades() {
+    async carregarMedico() {
+      console.log(this.id);
       this.isLoading = true;
       let token = {
         headers: {
           Authorization: `Bearer ${window.localStorage.getItem("token_ti")}`,
         },
       };
-      axios
+
+      await axios
         .post(
           `${url}api/especialidades/listar`,
           {
@@ -101,11 +107,20 @@ export default defineComponent({
           });
 
           this.data = newData;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
+      await axios
+        .get(`${url}api/medicos/${this.id}`, token)
+        .then((response) => {
+          this.nome = response.data.med_nome;
+          this.crm = response.data.med_CRM;
+          this.especialidade = response.data.especialidade.espec_codigo;
           this.isLoading = false;
         })
         .catch((error) => {
-          if (error.response.status) {
-          }
           console.error(error);
         });
     },
@@ -119,8 +134,8 @@ export default defineComponent({
           },
         };
         axios
-          .post(
-            `${url}api/medicos`,
+          .put(
+            `${url}api/medicos/${this.id}`,
             {
               med_nome: this.nome,
               med_CRM: this.crm,
@@ -133,10 +148,9 @@ export default defineComponent({
             this.$router.push("/medicos");
           })
           .catch((error) => {
-            if (error.response.status == 422) {
-              this.retornoTitulo = "Erro";
-              this.retorno = "Esse CRM já existe.";
-              this.icon = true;
+            if (error.response.status) {
+              localStorage.clear("token_ti");
+              this.$router.push("/");
             }
             this.isLoadingEnviar = false;
             this.botaoLabel = "Criar";
