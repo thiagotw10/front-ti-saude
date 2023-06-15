@@ -8,14 +8,15 @@
       :loading="isLoading"
     >
       <template v-slot:body-cell-acoes="props">
-        <div class="text-center">
-          <q-btn @click="redirecionarRota(props.row.id)" label="Editar" />
-          <q-btn @click="fazerRequisicao(props.row.id)" :label="labelDinamic" />
-        </div>
+        <td class="text-center">
+          <q-icon name="edit" @click="redirecionarRota(props.row.id)" style="cursor: pointer; font-size: larger; margin: 0 2px;" />
+          <q-icon name="delete" @click="fazerRequisicao(props.row.id)" style="cursor: pointer; font-size: larger; margin: 0 2px;" :label="labelDinamic" />
+        </td>
       </template>
     </q-table>
   </div>
 </template>
+
 
 <script>
 import { defineComponent } from "vue";

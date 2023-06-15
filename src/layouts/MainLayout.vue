@@ -12,8 +12,30 @@
         />
 
         <q-toolbar-title> Ti saúde </q-toolbar-title>
+        <div style="position: relative">
+          <q-btn
+            flat
+            dense
+            round
+            icon="logout"
+            @click="sair"
+            style="cursor: pointer"
+            @mouseover="mostrarLegenda = 'Sair'"
+            @mouseleave="mostrarLegenda = ''"
+          />
 
-        <div><q-btn label="sair" color="primary" @click="sair" /></div>
+          <span
+            style="
+              position: absolute;
+              left: -25px;
+              bottom: 7px;
+              font-size: 12px;
+              font-weight: bold;
+            "
+          >
+            {{ mostrarLegenda }}
+          </span>
+        </div>
       </q-toolbar>
     </q-header>
 
@@ -106,6 +128,7 @@ export default defineComponent({
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
       },
+      mostrarLegenda: ref(""),
     };
   },
 });
