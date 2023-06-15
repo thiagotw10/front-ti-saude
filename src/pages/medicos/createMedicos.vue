@@ -154,7 +154,7 @@ export default defineComponent({
       nome: ref(""),
       crm: ref(""),
       icon: ref(false),
-      especialidade: ref(null),
+      especialidade: ref(''),
     };
   },
 });

@@ -93,6 +93,12 @@ const routes = [
         beforeEnter: authGuard,
       },
       {
+        path: "/consultas/editar/:id",
+        component: () => import("src/pages/consultas/editarConsultas.vue"),
+        props: true,
+        beforeEnter: authGuard,
+      },
+      {
         path: "/procedimentos",
         component: () => import("src/pages/procedimentos/procedimentos.vue"),
         beforeEnter: authGuard,
