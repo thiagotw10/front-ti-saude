@@ -39,6 +39,7 @@ import { defineComponent } from "vue";
 import ModalLink from "components/ModalLink.vue";
 import TabelaLink from "components/TabelaLink.vue";
 import axios from "axios";
+import { url } from "src/urlApi";
 
 const columns = [
   {
@@ -101,7 +102,7 @@ export default defineComponent({
         },
       };
       axios
-        .delete(`http://192.168.0.104:8080/api/planosaude/${id}`, token)
+        .delete(`${url}api/planosaude/${id}`, token)
         .then((response) => {
           this.fetchData();
         })
@@ -117,7 +118,7 @@ export default defineComponent({
       };
       axios
         .post(
-          "http://192.168.0.104:8080/api/planosaude/listar",
+          `${url}api/planosaude/listar`,
           {
             registro_por_pagina: 10,
           },
